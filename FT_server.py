@@ -1,7 +1,7 @@
-from Tkinter import *
-from ttk import *
+# from Tkinter import *
+# from ttk import *
 import socket
-import thread
+from threading import Thread
 
 IP = "127.0.0.1"
 PORT = 5555
@@ -63,7 +63,7 @@ def unregister(client_sock):
 def handle_client_messages(client_sock):
     hello = myreceive(client_sock)
     if hello != "HELLO":
-        print "Got %s when should have gotten HELLO!" % hello
+        print("Got %s when should have gotten HELLO!" % hello)
     else:
         mysend(client_sock, "HI")
 
@@ -75,13 +75,24 @@ def handle_client_messages(client_sock):
         register_client(client_sock)
 
 
+def listen_clients():
+    print("1")
+    while 1:
+        client_sock, client_addr = server_soc.accept()
+        client_host, client_port = client_sock.getpeername()
+        if (client_host, client_port) in clients:
+            handle_request(client_sock, client_addr)
+        else:
+            Thread(target=handle_client_messages, args=client_sock).start()
+
+
 def init():
     global server_soc
     server_addr = (IP, PORT)
     server_soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_soc.bind(server_addr)
     server_soc.listen(5)
-    thread.start_new_thread(listen_clients, ())
+    listen_clients()
 
 
 def search(name):
@@ -110,14 +121,6 @@ def handle_request(client_sock, client_addr):
     if request == "BYE":
         unregister(client_sock)
 
-
-def listen_clients():
-    while 1:
-        client_sock, client_addr = server_soc.accept()
-        client_host, client_port = client_sock.getpeername()
-        if (client_host, client_port) in clients:
-            handle_request(client_sock, client_addr)
-        thread.start_new_thread(handle_client_messages, client_sock)
 
 
 if __name__ == '__main__':
