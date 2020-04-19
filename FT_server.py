@@ -7,6 +7,7 @@ IP = "127.0.0.1"
 PORT = 5555
 server_soc = None
 
+
 table = dict()
 clients = set()
 
@@ -60,7 +61,7 @@ def unregister(client_sock):
     clients.remove((host, port))
 
 
-def handle_client_messages(client_sock):
+def handle_client_first_time(client_sock):
     hello = myreceive(client_sock)
     if hello != "HELLO":
         print("Got %s when should have gotten HELLO!" % hello)
@@ -73,6 +74,7 @@ def handle_client_messages(client_sock):
     is_ok = add_to_table(files_str, host, port)
     if is_ok:
         register_client(client_sock)
+    client_sock.close()
 
 
 def listen_clients():
@@ -81,9 +83,9 @@ def listen_clients():
         client_sock, client_addr = server_soc.accept()
         client_host, client_port = client_sock.getpeername()
         if (client_host, client_port) in clients:
-            handle_request(client_sock, client_addr)
+            Thread(target=handle_request, args= (client_sock, client_addr))
         else:
-            Thread(target=handle_client_messages, args=client_sock).start()
+            Thread(target=handle_client_first_time(), args=client_sock).start()
 
 
 def init():
@@ -120,6 +122,8 @@ def handle_request(client_sock, client_addr):
 
     if request == "BYE":
         unregister(client_sock)
+
+    client_sock.close()
 
 
 
