@@ -1,4 +1,4 @@
-from tkinter import *
+from Tkinter import *
 import thread
 import socket
 import platform
@@ -18,7 +18,7 @@ class App(Frame):
         self.socket = None
         self.IP = '127.0.0.1'
         self.FTIP = '127.0.0.1'
-        self.FTPORT = '5555'
+        self.FTPORT = 5555
         self.listenSocket = None
         self.sendSocket = None
         self.initSockets()
@@ -31,14 +31,13 @@ class App(Frame):
         listen_port = self.generatePORT()
         send_port = self.generatePORT()
         listen_addr = (self.IP, listen_port)
-        send_addr = (self.IP, send_port)
+        send_addr = (self.IP, 5001)
         self.listenSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sendSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.listenSocket.bind(listen_addr)
         self.sendSocket.bind(send_addr)
         self.listenSocket.listen(5)
-        self.listen_clients()
-
+        # self.listen_clients()
 
     def listenSockets(self):
         while 1:
@@ -80,7 +79,8 @@ class App(Frame):
         search_field.grid(row=1, column=2)
         search_button.grid(row=1, column=3)
 
-    def mysend(self, sock, msg):
+    def mysend(self, sock, mes):
+        msg = mes.encode()
         totalsent = 0
         while(totalsent < len(msg)):
             sent = sock.send(msg[totalsent:])
@@ -96,16 +96,10 @@ class App(Frame):
 
         request = "SEARCH: " + name
 
-        self.sendmsg(self.sendSocket, request)
+        self.mysend(self.sendSocket, request)
 
+        self.sendSocket.dis
 
-    def sendmsg(self, sock, msg):
-        totalsent = 0
-        while totalsent < len(msg):
-            sent = sock.send(msg[totalsent:])
-            if sent == 0:
-                raise RuntimeError("socket connection broken")
-            totalsent = totalsent + sent
 
     def printing(self):
         print("ffffff")

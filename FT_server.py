@@ -10,6 +10,7 @@ server_soc = None
 
 table = dict()
 clients = set()
+clients.add(('127.0.0.1', 5001))
 
 
 def myreceive(client_sock):
@@ -30,7 +31,6 @@ def mysend(client_sock, mes):
         if sent == 0:
             raise RuntimeError("socket connection broken")
         totalsent = totalsent + sent
-
 
 def add_to_table(files_str, host, port):
     count = 0
@@ -113,6 +113,7 @@ def search(name):
 
 def handle_request(client_sock, client_addr):
     request = myreceive(client_sock)
+    print(request)
     if request[:7] == "SEARCH":
         name = request[9:]
         sources = search(name)

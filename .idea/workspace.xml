@@ -4,6 +4,7 @@
     <list default="true" id="5719bbe3-3792-48a7-b60c-efe0fc95b262" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/FT_server.py" beforeDir="false" afterPath="$PROJECT_DIR$/FT_server.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client.py" beforeDir="false" afterPath="$PROJECT_DIR$/client.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test_client.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_client.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -39,7 +40,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.FT_server">
+  <component name="RunManager" selected="Python.client">
     <configuration name="FT_server" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="P2PFileSharingSystem" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -123,6 +124,7 @@
       <option name="presentableId" value="Default" />
       <updated>1587226795259</updated>
       <workItem from="1587226799971" duration="10786000" />
+      <workItem from="1587388789841" duration="1883000" />
     </task>
     <servers />
   </component>
@@ -134,15 +136,17 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
           </value>
         </entry>
       </map>
     </option>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/P2PFileSharingSystem$client.coverage" NAME="client Coverage Results" MODIFIED="1587386306937" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/P2PFileSharingSystem$test_client.coverage" NAME="test_client Coverage Results" MODIFIED="1587388108719" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/P2PFileSharingSystem$FT_server.coverage" NAME="FT_server Coverage Results" MODIFIED="1587388102226" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/P2PFileSharingSystem$client.coverage" NAME="client Coverage Results" MODIFIED="1587389968244" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/P2PFileSharingSystem$FT_server.coverage" NAME="FT_server Coverage Results" MODIFIED="1587389877133" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
