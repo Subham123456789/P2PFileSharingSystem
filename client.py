@@ -26,12 +26,16 @@ class App(Frame):
 
     def initSockets(self):
         listen_port = self.generatePORT()
+        send_port = self.generatePORT()
         listen_addr = (self.IP, listen_port)
+        send_addr = (self.IP, send_port)
         self.listenSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sendSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.listenSocket.bind(listen_addr)
+        self.sendSocket.bind(send_addr)
         self.listenSocket.listen(5)
         self.listen_clients()
+
 
     def listenSockets(self):
         while 1:
