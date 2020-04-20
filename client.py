@@ -69,12 +69,6 @@ class App(Frame):
         self.mysend(client_soc, greeting_message)
         #client_soc.close()
         
-
-    
-
-
-
-
 def main():
     root = Tk()
     app = App(root)
