@@ -19,10 +19,11 @@ def myreceive(client_sock):
         chunks.append(chunk)
         if len(chunk) == 0:
             break
-    return ''.join(chunks)
+    return str(b''.join(chunks))[2:-1]
 
 
-def mysend(client_sock, msg):
+def mysend(client_sock, mes):
+    msg = mes.encode()
     totalsent = 0
     while totalsent < len(msg):
         sent = client_sock.send(msg[totalsent:])
@@ -62,6 +63,7 @@ def unregister(client_sock):
 
 
 def handle_client_first_time(client_sock):
+    print(client_sock.getpeername())
     hello = myreceive(client_sock)
     print(hello)
     if hello != "HELLO":
