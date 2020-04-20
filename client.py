@@ -81,7 +81,7 @@ class App(Frame):
         search_field = Entry(search_frame, width=20, textvariable=self.search_var)
         search_button = Button(search_frame, text="Search", width=10, command=self.search)
         connect_button = Button(search_frame, text = "Connect", width=10, command=self.connect)
-        self.list_of_clients = Label(parentFrame, text="")
+        self.list_of_clients = StringVar()
         search_frame.grid(padx=130, pady=100, sticky=E + W + N + S)
         connect_button.grid(row=0, column=2)
         search_label.grid(row=1, column=1)
@@ -104,6 +104,8 @@ class App(Frame):
 
         name = self.search_var.get()
 
+        print(name)
+
         request = "SEARCH: " + name
         self.mysend(self.sendSocket, request)
         message = self.myreceive(self.sendSocket)
@@ -124,7 +126,7 @@ class App(Frame):
         print(path)
         f_list = os.listdir('.')
         print(f_list)
-        list_of_files = [[os.path.splitext(f)[0], os.path.splitext(f)[1], time.strftime('%d/%m/%Y', time.localtime(os.path.getmtime(f))), str(os.path.getsize(f))] for f in f_list if os.path.isfile(f)]
+        list_of_files = [[os.path.splitext(f)[0],self.IP, str(self.LISTENPORT), os.path.splitext(f)[1], time.strftime('%d/%m/%Y', time.localtime(os.path.getmtime(f))), str(os.path.getsize(f))] for f in f_list if os.path.isfile(f)]
         print(list_of_files)
         stream = ';'.join(["<" + ','.join(x) + ">" for x in list_of_files])
         self.mysend(self.sendSocket, stream)

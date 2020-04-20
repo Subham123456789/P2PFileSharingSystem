@@ -24,7 +24,7 @@ def add_to_table(files_str, host, port):
     count = 0
     try:
         for file_str in files_str:
-            data = file_str[1, -1]
+            data = file_str[1: -1]
             arr = data.split(',')
             name = arr[0]
             arr = arr[1:]
@@ -34,6 +34,7 @@ def add_to_table(files_str, host, port):
             else:
                 table[name] = [(host, port, value)]
             count += 1
+        print(table)
     except:
         return False
     if count == 0:
