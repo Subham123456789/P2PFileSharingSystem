@@ -11,26 +11,14 @@ server_soc = None
 table = dict()
 clients = set()
 
-
 def myreceive(client_sock):
-    chunks = []
-    while 1:
-        chunk = client_sock.recv(2048)
-        chunks.append(chunk)
-        if len(chunk) == 0:
-            break
-    return str(b''.join(chunks))[2:-1]
-
+    chunk = client_sock.recv(2048)
+    chunk = chunk.decode()
+    return chunk
 
 def mysend(client_sock, mes):
     msg = mes.encode()
-    totalsent = 0
-    while totalsent < len(msg):
-        sent = client_sock.send(msg[totalsent:])
-        if sent == 0:
-            raise RuntimeError("socket connection broken")
-        totalsent = totalsent + sent
-
+    client_sock.sendall(msg)
 
 def add_to_table(files_str, host, port):
     count = 0
@@ -63,13 +51,20 @@ def unregister(client_sock):
 
 
 def handle_client_first_time(client_sock):
-    hello = myreceive(client_sock)
-    if hello != "HELLO":
-        print("Got %s when should have gotten HELLO!" % hello)
+    greeting_message = "HI"
+    greeting_message = greeting_message.encode()
+    hello1 = client_sock.recv(2048)
+    hello1 = hello1.decode()
+    #hello = myreceive(client_sock)
+    if hello1 != "HELLO":
+        print("Got %s when should have gotten HELLO!" % hello1)
     else:
-        mysend(client_sock, "HI")
-
+        print("it is %s " % hello1)
+        client_sock.sendall(greeting_message)
+        #mysend(client_sock, "HI")
+        
     data = myreceive(client_sock)
+    print(data)
     files_str = data.split(';')
     host, port = client_sock.getpeername()
     is_ok = add_to_table(files_str, host, port)
@@ -85,7 +80,7 @@ def listen_clients():
         print(client_sock)
         print(client_addr)
         if (client_host, client_port) in clients:
-            Thread(target=handle_request, args= (client_sock, client_addr))
+            Thread(target=handle_request, args= (client_sock, client_addr)).start()
         else:
             Thread(target=handle_client_first_time, args=(client_sock, )).start()
 
