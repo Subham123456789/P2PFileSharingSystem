@@ -19,10 +19,11 @@ def myreceive(client_sock):
         chunks.append(chunk)
         if len(chunk) == 0:
             break
-    return ''.join(chunks)
+    return str(b''.join(chunks))[2:-1]
 
 
-def mysend(client_sock, msg):
+def mysend(client_sock, mes):
+    msg = mes.encode()
     totalsent = 0
     while totalsent < len(msg):
         sent = client_sock.send(msg[totalsent:])
@@ -78,7 +79,6 @@ def handle_client_first_time(client_sock):
 
 
 def listen_clients():
-    print("1")
     while 1:
         client_sock, client_addr = server_soc.accept()
         client_host, client_port = client_sock.getpeername()
