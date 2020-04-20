@@ -1,4 +1,4 @@
-from tkinter import *
+from Tkinter import *
 import thread
 import socket
 import platform
@@ -24,31 +24,38 @@ class App(Frame):
         self.FTPORT = 5555
         self.MYPORT = self.generatePORT()
         self.LISTENPORT = self.generatePORT()
-        self.listenSocket = None
-        self.sendSocket = None
-        self.listenSocket = self.initSocket(sock=self.listenSocket, t=1)
-        self.listenSocket.listen(5)
+        self.listenSocket = self.initSocket(1)
+        self.sendSocket = self.initSocket(0)
         thread.start_new_thread(self.listenClients, ())
 
 
     def generatePORT(self):
         return randint(5000, 9000)
 
-    def initSocket(self, sock, t=0):
+    def initSocket(self, t):
         port = self.LISTENPORT
         if t == 0:
             port = self.MYPORT
         addr = (self.IP, port)
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.bind(addr)
+        try:
+            sock.bind(addr)
+            print("BINDED")
+        except:
+            if t == 0:
+                self.MYPORT = self.generatePORT()
+                self.sendSocket = self.initSocket(0)
+            else:
+                self.LISTENPORT = self.generatePORT()
+                self.listenSocket = self.initSocket(1)
+
+        if t == 0:
+            sock.connect((self.FTIP, self.FTPORT))
+        else:
+            sock.listen(5)
         return sock
 
     def listenClients(self):
-        while 1:
-            client_sock, client_addr = self.listenSocket.accept()
-            thread.start_new_thread(self.handleRequest, client_sock)
-
-    def listenSockets(self):
         while 1:
             client_sock, client_addr = self.listenSocket.accept()
             thread.start_new_thread(self.handleRequest, client_sock)
@@ -79,8 +86,8 @@ class App(Frame):
         self.search_var = StringVar()
         self.search_var.set("Enter the file name")
         search_field = Entry(search_frame, width=20, textvariable=self.search_var)
-        search_button = Button(search_frame, text="Search", width=10, command=self.search)
-        connect_button = Button(search_frame, text = "Connect", width=10, command=self.connect)
+        search_button = Button(search_frame, text="Search", width=10, command=self.send_search)
+        connect_button = Button(search_frame, text = "Connect", width=10, command=self.send_connect)
         self.list_of_clients = Label(parentFrame, text="")
         search_frame.grid(padx=130, pady=100, sticky=E + W + N + S)
         connect_button.grid(row=0, column=2)
@@ -94,26 +101,28 @@ class App(Frame):
     def mysend(self, client_sock, msg):
         client_sock.sendall(msg.encode())
 
-    def search(self):
-        thread.start_new_thread(self.send_search, ())
-
     def send_search(self):
+        thread.start_new_thread(self.search, ())
 
-        self.sendSocket = self.initSocket(self.sendSocket)
-        self.sendSocket.connect((self.FTIP, self.FTPORT))
+    def send_connect(self):
+        thread.start_new_thread(self.connect, ())
 
+    def search(self):
+
+        # self.sendSocket = self.initSocket(self.sendSocket)
+        # self.sendSocket.connect((self.FTIP, self.FTPORT))
         name = self.search_var.get()
 
         request = "SEARCH: " + name
         self.mysend(self.sendSocket, request)
         message = self.myreceive(self.sendSocket)
         print(message)
-        self.list_of_clients.set(message)
-        self.sendSocket.close()
+        # self.list_of_clients.set(message)
+        # self.sendSocket.close()
 
     def connect(self):
-        self.sendSocket = self.initSocket(self.sendSocket)
-        self.sendSocket.connect((self.FTIP, self.FTPORT))
+        # self.sendSocket = self.initSocket(self.sendSocket)
+        # self.sendSocket.connect((self.FTIP, self.FTPORT))
 
         print("Connecting to Server ")
         greeting_message = "HELLO"
@@ -129,7 +138,8 @@ class App(Frame):
         stream = ';'.join(["<" + ','.join(x) + ">" for x in list_of_files])
         self.mysend(self.sendSocket, stream)
 
-        self.sendSocket.close()
+        # self.sendSocket.close()
+        # print("CLOSED")
 
 
     def download(self, client_addr, client_port):

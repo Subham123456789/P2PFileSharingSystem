@@ -20,11 +20,12 @@ def myreceive(client_sock):
 def mysend(client_sock, msg):
     client_sock.send(msg.encode())
 
+
 def add_to_table(files_str, host, port):
     count = 0
     try:
         for file_str in files_str:
-            data = file_str[1, -1]
+            data = file_str[1:-1]
             arr = data.split(',')
             name = arr[0]
             arr = arr[1:]
@@ -48,41 +49,26 @@ def register_client(client_sock):
 def unregister(client_sock):
     host, port = client_sock.getpeername()
     clients.remove((host, port))
+    client_sock.close()
 
 
 def handle_client_first_time(client_sock):
-    greeting_message = "HI"
-    greeting_message = greeting_message.encode()
-    hello1 = client_sock.recv(2048)
-    hello1 = hello1.decode()
-    #hello = myreceive(client_sock)
-    if hello1 != "HELLO":
-        print("Got %s when should have gotten HELLO!" % hello1)
-    else:
-        print("it is %s " % hello1)
-        client_sock.sendall(greeting_message)
-        #mysend(client_sock, "HI")
+    pass
+    # greeting_message = greeting_message.encode()
+    # hello1 = client_sock.recv(2048)
+    # hello1 = hello1.decode()
+    # #hello = myreceive(client_sock)
 
-    data = myreceive(client_sock)
-    print(data)
-    files_str = data.split(';')
-    host, port = client_sock.getpeername()
-    is_ok = add_to_table(files_str, host, port)
-    if is_ok:
-        register_client(client_sock)
-    client_sock.close()
 
 
 def listen_clients():
     while 1:
         client_sock, client_addr = server_soc.accept()
-        client_host, client_port = client_sock.getpeername()
         print(client_sock)
         print(client_addr)
-        if (client_host, client_port) in clients:
-            Thread(target=handle_request, args= (client_sock, client_addr)).start()
-        else:
-            Thread(target=handle_client_first_time, args=(client_sock, )).start()
+        Thread(target=handle, args=(client_sock, client_addr)).start()
+
+
 
 
 def init():
@@ -103,26 +89,54 @@ def search(name):
             if (host, port) in clients:
                 ans.append(value)
         return ans
+    print(table)
+    print("NOT IN TABLE")
     return None
 
 
-def handle_request(client_sock, client_addr):
-    request = myreceive(client_sock)
+def handle(client_sock, client_addr):
+    chunk = myreceive(client_sock)
+    while chunk:
+        handle_request(chunk, client_sock)
+        try:
+            chunk = myreceive(client_sock)
+        except:
+            chunk = None
+    client_sock.close()
+
+def handle_request(request, client_sock):
+    client_host, client_port = client_sock.getpeername()
+    greeting_message = "HI"
     print(request)
+    if request == "HELLO":
+        print("it is %s " % request)
+        mysend(client_sock, greeting_message)
+
+        data = myreceive(client_sock)
+        print(data)
+        files_str = data.split(';')
+        host, port = client_sock.getpeername()
+        is_ok = add_to_table(files_str, host, port)
+        if is_ok:
+            register_client(client_sock)
+        return
+
     if request[:6] == "SEARCH":
-        name = request[9:]
-        sources = search(name)
-        print(sources)
-        if sources is not None:
-            text = ";".join(sources)
-            mysend(client_sock, "FOUND: <%s>" % text)
+        if (client_host, client_port) not in clients:
+            mysend(client_sock, "UNREGISTERED")
         else:
-            mysend(client_sock, "NOT FOUND")
+            name = request[8:]
+            sources = search(name)
+            print(sources)
+            if sources is not None:
+                text = ";".join(sources)
+                mysend(client_sock, "FOUND: <%s>" % text)
+            else:
+                mysend(client_sock, "NOT FOUND")
+        return
 
     if request == "BYE":
         unregister(client_sock)
-
-    client_sock.close()
 
 
 
