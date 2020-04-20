@@ -63,9 +63,7 @@ def unregister(client_sock):
 
 
 def handle_client_first_time(client_sock):
-    print(client_sock.getpeername())
     hello = myreceive(client_sock)
-    print(hello)
     if hello != "HELLO":
         print("Got %s when should have gotten HELLO!" % hello)
     else:
