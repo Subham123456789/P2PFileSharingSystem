@@ -63,6 +63,7 @@ def unregister(client_sock):
 
 def handle_client_first_time(client_sock):
     hello = myreceive(client_sock)
+    print(hello)
     if hello != "HELLO":
         print("Got %s when should have gotten HELLO!" % hello)
     else:
@@ -78,14 +79,13 @@ def handle_client_first_time(client_sock):
 
 
 def listen_clients():
-    print("1")
     while 1:
         client_sock, client_addr = server_soc.accept()
         client_host, client_port = client_sock.getpeername()
         if (client_host, client_port) in clients:
             Thread(target=handle_request, args= (client_sock, client_addr))
         else:
-            Thread(target=handle_client_first_time(), args=client_sock).start()
+            Thread(target=handle_client_first_time, args=(client_sock, )).start()
 
 
 def init():
