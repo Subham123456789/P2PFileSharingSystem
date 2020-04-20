@@ -1,4 +1,4 @@
-from Tkinter import *
+from tkinter import *
 import thread
 import socket
 import platform
@@ -22,9 +22,11 @@ class App(Frame):
         self.IP = '127.0.0.1'
         self.FTIP = '127.0.0.1'
         self.FTPORT = 5555
+        self.MYPORT = self.generatePORT()
+        self.LISTENPORT = self.generatePORT()
         self.listenSocket = None
         self.sendSocket = None
-        self.listenSocket = self.initSocket(self.listenSocket)
+        self.listenSocket = self.initSocket(sock=self.listenSocket, t=1)
         self.listenSocket.listen(5)
         thread.start_new_thread(self.listenClients, ())
 
@@ -32,8 +34,10 @@ class App(Frame):
     def generatePORT(self):
         return randint(5000, 9000)
 
-    def initSocket(self, sock):
-        port = self.generatePORT()
+    def initSocket(self, sock, t=0):
+        port = self.LISTENPORT
+        if t == 0:
+            port = self.MYPORT
         addr = (self.IP, port)
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.bind(addr)
@@ -95,11 +99,7 @@ class App(Frame):
 
     def send_search(self):
 
-        # self.sendSocket = self.initSocket(self.sendSocket)
-        port = 5002
-        addr = (self.IP, port)
-        self.sendSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sendSocket.bind(addr)
+        self.sendSocket = self.initSocket(self.sendSocket)
         self.sendSocket.connect((self.FTIP, self.FTPORT))
 
         name = self.search_var.get()
@@ -112,7 +112,9 @@ class App(Frame):
         self.sendSocket.close()
 
     def connect(self):
-        self.sendSocket.connect(('localhost', 5555))
+        self.sendSocket = self.initSocket(self.sendSocket)
+        self.sendSocket.connect((self.FTIP, self.FTPORT))
+
         print("Connecting to Server ")
         greeting_message = "HELLO"
         self.mysend(self.sendSocket, greeting_message)
@@ -126,6 +128,8 @@ class App(Frame):
         print(list_of_files)
         stream = ';'.join(["<" + ','.join(x) + ">" for x in list_of_files])
         self.mysend(self.sendSocket, stream)
+
+        self.sendSocket.close()
 
 
     def download(self, client_addr, client_port):
