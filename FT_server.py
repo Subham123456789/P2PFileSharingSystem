@@ -35,6 +35,7 @@ def add_to_table(files_str, host, port):
             else:
                 table[name] = [(host, port, value)]
             count += 1
+        print(table)
     except:
         return False
     if count == 0:

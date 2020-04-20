@@ -113,6 +113,8 @@ class App(Frame):
         # self.sendSocket.connect((self.FTIP, self.FTPORT))
         name = self.search_var.get()
 
+        print(name)
+
         request = "SEARCH: " + name
         self.mysend(self.sendSocket, request)
         message = self.myreceive(self.sendSocket)
@@ -133,7 +135,7 @@ class App(Frame):
         print(path)
         f_list = os.listdir('.')
         print(f_list)
-        list_of_files = [[os.path.splitext(f)[0], os.path.splitext(f)[1], time.strftime('%d/%m/%Y', time.localtime(os.path.getmtime(f))), str(os.path.getsize(f))] for f in f_list if os.path.isfile(f)]
+        list_of_files = [[os.path.splitext(f)[0],self.IP, str(self.LISTENPORT), os.path.splitext(f)[1], time.strftime('%d/%m/%Y', time.localtime(os.path.getmtime(f))), str(os.path.getsize(f))] for f in f_list if os.path.isfile(f)]
         print(list_of_files)
         stream = ';'.join(["<" + ','.join(x) + ">" for x in list_of_files])
         self.mysend(self.sendSocket, stream)
