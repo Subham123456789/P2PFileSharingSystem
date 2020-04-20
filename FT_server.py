@@ -3,7 +3,7 @@
 import socket
 from threading import Thread
 
-IP = "127.0.0.1"
+IP = 'localhost'
 PORT = 5555
 server_soc = None
 
@@ -82,10 +82,12 @@ def listen_clients():
     while 1:
         client_sock, client_addr = server_soc.accept()
         client_host, client_port = client_sock.getpeername()
+        print(client_sock)
+        print(client_addr)
         if (client_host, client_port) in clients:
             Thread(target=handle_request, args= (client_sock, client_addr))
         else:
-            Thread(target=handle_client_first_time(), args=client_sock).start()
+            Thread(target=handle_client_first_time, args=(client_sock, )).start()
 
 
 def init():
