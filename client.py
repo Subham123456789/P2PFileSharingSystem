@@ -2,6 +2,9 @@ from Tkinter import *
 import thread
 import socket
 import platform
+import os
+import time
+
 
 SERVER_IP = "127.0.0.1"
 SERVER_PORT = 5555
@@ -37,6 +40,11 @@ class App(Frame):
         return sock
 
     def listenClients(self):
+        while 1:
+            client_sock, client_addr = self.listenSocket.accept()
+            thread.start_new_thread(self.handleRequest, client_sock)
+
+    def listenSockets(self):
         while 1:
             client_sock, client_addr = self.listenSocket.accept()
             thread.start_new_thread(self.handleRequest, client_sock)
@@ -104,13 +112,21 @@ class App(Frame):
         self.sendSocket.close()
 
     def connect(self):
-        global client_soc
-        client_soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sendSocket.connect(('localhost', 5555))
         print("Connecting to Server ")
-        client_soc.connect(('localhost', 5555))
         greeting_message = "HELLO"
-        self.mysend(client_soc, greeting_message)
-        #client_soc.close()
+        self.mysend(self.sendSocket, greeting_message)
+        reply = self.myreceive(self.sendSocket)
+        print(reply)
+        path = os.getcwd()
+        print(path)
+        f_list = os.listdir('.')
+        print(f_list)
+        list_of_files = [[os.path.splitext(f)[0], os.path.splitext(f)[1], time.strftime('%d/%m/%Y', time.localtime(os.path.getmtime(f))), str(os.path.getsize(f))] for f in f_list if os.path.isfile(f)]
+        print(list_of_files)
+        stream = ';'.join(["<" + ','.join(x) + ">" for x in list_of_files])
+        self.mysend(self.sendSocket, stream)
+
 
     def download(self, client_addr, client_port):
         self.sendSocket.connect((client_addr, client_port))
@@ -128,8 +144,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-    arr = []
-
-
-    ';'.join(["<" + ','.join(x) + ">" for x in arr])

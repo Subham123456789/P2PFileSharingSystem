@@ -51,13 +51,20 @@ def unregister(client_sock):
 
 
 def handle_client_first_time(client_sock):
-    hello = myreceive(client_sock)
-    if hello != "HELLO":
-        print("Got %s when should have gotten HELLO!" % hello)
+    greeting_message = "HI"
+    greeting_message = greeting_message.encode()
+    hello1 = client_sock.recv(2048)
+    hello1 = hello1.decode()
+    #hello = myreceive(client_sock)
+    if hello1 != "HELLO":
+        print("Got %s when should have gotten HELLO!" % hello1)
     else:
-        mysend(client_sock, "HI")
+        print("it is %s " % hello1)
+        client_sock.sendall(greeting_message)
+        #mysend(client_sock, "HI")
 
     data = myreceive(client_sock)
+    print(data)
     files_str = data.split(';')
     host, port = client_sock.getpeername()
     is_ok = add_to_table(files_str, host, port)
