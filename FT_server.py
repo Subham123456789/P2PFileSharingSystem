@@ -10,27 +10,15 @@ server_soc = None
 
 table = dict()
 clients = set()
-clients.add(('127.0.0.1', 5001))
+clients.add(('127.0.0.1', 5002))
 
 
 def myreceive(client_sock):
-    chunks = []
-    while 1:
-        chunk = client_sock.recv(2048)
-        chunks.append(chunk)
-        if len(chunk) == 0:
-            break
-    return str(b''.join(chunks))[2:-1]
+    return client_sock.recv(2048).decode()
 
 
-def mysend(client_sock, mes):
-    msg = mes.encode()
-    totalsent = 0
-    while totalsent < len(msg):
-        sent = client_sock.send(msg[totalsent:])
-        if sent == 0:
-            raise RuntimeError("socket connection broken")
-        totalsent = totalsent + sent
+def mysend(client_sock, msg):
+    client_sock.send(msg.encode())
 
 def add_to_table(files_str, host, port):
     count = 0
@@ -85,7 +73,7 @@ def listen_clients():
         print(client_sock)
         print(client_addr)
         if (client_host, client_port) in clients:
-            Thread(target=handle_request, args= (client_sock, client_addr))
+            Thread(target=handle_request, args= (client_sock, client_addr)).start()
         else:
             Thread(target=handle_client_first_time, args=(client_sock, )).start()
 
@@ -114,9 +102,10 @@ def search(name):
 def handle_request(client_sock, client_addr):
     request = myreceive(client_sock)
     print(request)
-    if request[:7] == "SEARCH":
+    if request[:6] == "SEARCH":
         name = request[9:]
         sources = search(name)
+        print(sources)
         if sources is not None:
             text = ";".join(sources)
             mysend(client_sock, "FOUND: <%s>" % text)

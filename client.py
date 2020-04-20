@@ -21,25 +21,22 @@ class App(Frame):
         self.FTPORT = 5555
         self.listenSocket = None
         self.sendSocket = None
-        self.initSockets()
+        self.listenSocket = self.initSocket(self.listenSocket)
+        self.listenSocket.listen(5)
+        thread.start_new_thread(self.listenClients, ())
 
 
     def generatePORT(self):
         return randint(5000, 9000)
 
-    def initSockets(self):
-        listen_port = self.generatePORT()
-        send_port = self.generatePORT()
-        listen_addr = (self.IP, listen_port)
-        send_addr = (self.IP, 5001)
-        self.listenSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sendSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.listenSocket.bind(listen_addr)
-        self.sendSocket.bind(send_addr)
-        self.listenSocket.listen(5)
-        # self.listen_clients()
+    def initSocket(self, sock):
+        port = self.generatePORT()
+        addr = (self.IP, port)
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.bind(addr)
+        return sock
 
-    def listenSockets(self):
+    def listenClients(self):
         while 1:
             client_sock, client_addr = self.listenSocket.accept()
             thread.start_new_thread(self.handleRequest, client_sock)
@@ -72,37 +69,39 @@ class App(Frame):
         search_field = Entry(search_frame, width=20, textvariable=self.search_var)
         search_button = Button(search_frame, text="Search", width=10, command=self.search)
         connect_button = Button(search_frame, text = "Connect", width=10, command=self.connect)
-
+        self.list_of_clients = Label(parentFrame, text="")
         search_frame.grid(padx=130, pady=100, sticky=E + W + N + S)
         connect_button.grid(row=0, column=2)
         search_label.grid(row=1, column=1)
         search_field.grid(row=1, column=2)
         search_button.grid(row=1, column=3)
 
-    def mysend(self, sock, mes):
-        msg = mes.encode()
-        totalsent = 0
-        while(totalsent < len(msg)):
-            sent = sock.send(msg[totalsent:])
-            if sent==0:
-                raise RuntimeError("socket connection broken")
-            totalsent = totalsent + sent
+    def myreceive(self, client_sock):
+        return client_sock.recv(2048).decode()
+
+    def mysend(self, client_sock, msg):
+        client_sock.sendall(msg.encode())
 
     def search(self):
-        # thread.start_new_thread(self.printing, ())
+        thread.start_new_thread(self.send_search, ())
+
+    def send_search(self):
+
+        # self.sendSocket = self.initSocket(self.sendSocket)
+        port = 5002
+        addr = (self.IP, port)
+        self.sendSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sendSocket.bind(addr)
         self.sendSocket.connect((self.FTIP, self.FTPORT))
 
         name = self.search_var.get()
 
         request = "SEARCH: " + name
-
         self.mysend(self.sendSocket, request)
-
-        self.sendSocket.dis
-
-
-    def printing(self):
-        print("ffffff")
+        message = self.myreceive(self.sendSocket)
+        print(message)
+        self.list_of_clients.set(message)
+        self.sendSocket.close()
 
     def connect(self):
         global client_soc
@@ -129,3 +128,8 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+    arr = []
+
+
+    ';'.join(["<" + ','.join(x) + ">" for x in arr])
