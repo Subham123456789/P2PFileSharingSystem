@@ -1,4 +1,4 @@
-from Tkinter import *
+from tkinter import *
 import thread
 import socket
 import platform
@@ -133,11 +133,11 @@ class App(Frame):
 
     def search(self):
 
-
+        self.records_list.delete(0,END)
         # self.sendSocket = self.initSocket(self.sendSocket)
         # self.sendSocket.connect((self.FTIP, self.FTPORT))
         name = self.search_var.get()
-
+        self.search_var.set("")
         print(name)
 
         request = "SEARCH: " + name
@@ -150,7 +150,9 @@ class App(Frame):
             message = message.split(';')
 
             for el in message:
-                self.records_list.insert(END, el)
+                el1 = el.split(',')
+                if int(el1[2]) != self.LISTENPORT:
+                    self.records_list.insert(END, el)
 
             # self.list_of_clients.set(message)
             # self.sendSocket.close()
@@ -226,6 +228,8 @@ class App(Frame):
         print(choosen_port)
         print(sending_value)
         self.download(choosen_host, choosen_port, sending_value)
+
+
     
 
 def main():
