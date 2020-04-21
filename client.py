@@ -132,6 +132,8 @@ class App(Frame):
         request = "SEARCH: " + name
         self.mysend(self.sendSocket, request)
         message = self.myreceive(self.sendSocket)
+
+        print(message)
         message = message[7:][1:-1]
         message = message.split(';')
         print(message)
@@ -192,15 +194,23 @@ class App(Frame):
         print ("ERROR OCCURED")
 
     def choose_item(self):
+        choosen_value = []
         choosen_item = self.records_list.get(ACTIVE)
         print(choosen_item)
         choosen_arr = choosen_item.split(',')
-        choosen_host = choosen_arr[0]
-        choosen_port = int(choosen_arr[1])
-
+        choosen_filename = choosen_arr[0]
+        choosen_host = choosen_arr[1]
+        choosen_port = int(choosen_arr[2])
+        choosen_ext = choosen_arr[3]
+        choosen_size = choosen_arr[5]
+        choosen_value.append(choosen_filename)
+        choosen_value.append(choosen_ext)
+        choosen_value.append(choosen_size)
+        sending_value = ",".join(choosen_value)
         print(choosen_host)
         print(choosen_port)
-
+        print(sending_value)
+        self.download(choosen_host, choosen_port, sending_value)
     
 
 def main():

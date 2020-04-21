@@ -28,7 +28,7 @@ def add_to_table(files_str, host, port):
             data = file_str[1:-1]
             arr = data.split(',')
             name = arr[0]
-            arr = arr[1:]
+            #arr = arr[1:]
             value = ",".join(arr)
             if name in table:
                 table[name].append((host, port, value))
