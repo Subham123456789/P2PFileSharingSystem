@@ -7,7 +7,6 @@ import time
 from random import seed
 from random import randint
 
-
 class App(Frame):
 
     def __init__(self, root):
@@ -23,6 +22,7 @@ class App(Frame):
         self.listenSocket = self.initSocket(1)
         self.sendSocket = self.initSocket(0)
         thread.start_new_thread(self.listenClients, ())
+
 
     def generatePORT(self):
         return randint(5000, 9000)
@@ -53,7 +53,7 @@ class App(Frame):
     def listenClients(self):
         while 1:
             client_sock, client_addr = self.listenSocket.accept()
-            thread.start_new_thread(self.handleRequest, (client_sock,))
+            thread.start_new_thread(self.handleRequest, (client_sock, ))
 
     def handleRequest(self, client_sock):
         stream = self.myreceive(client_sock)
@@ -62,12 +62,13 @@ class App(Frame):
             name = info[0]
             type = info[1]
             size = info[2]
-            full_name = name + type
+            full_name = name+type
             f = open(full_name, 'rb')
             text = f.read()
             protocol = "FILE: "
             client_sock.sendall(protocol.encode() + text)
             f.close()
+
 
     def initUI(self):
         self.root.title("P2P File Sharing System")
@@ -85,7 +86,7 @@ class App(Frame):
         padX = 10
         padY = 10
         self.parentFrame = Frame(self.root)
-        self.parentFrame.grid(padx=padX, pady=padY, sticky=E + W + N + S)
+        self.parentFrame.grid(padx=padX, pady=padY, sticky=E+W+N+S)
 
         self.search_frame = Frame(self.parentFrame)
         self.search_label = Label(self.search_frame, text="File name: ")
@@ -93,7 +94,7 @@ class App(Frame):
         self.search_var.set("Enter the file name")
         self.search_field = Entry(self.search_frame, width=20, textvariable=self.search_var)
         self.search_button = Button(self.search_frame, text="Search", width=10, command=self.send_search)
-        self.connect_button = Button(self.search_frame, text="Connect", width=10, command=self.send_connect)
+        self.connect_button = Button(self.search_frame, text = "Connect", width=10, command=self.send_connect)
         self.list_of_clients = Label(self.parentFrame, text="")
         self.search_frame.grid(padx=110, pady=100, sticky=E + W + N + S)
         self.connect_button.grid(row=0, column=2)
@@ -105,11 +106,12 @@ class App(Frame):
         self.records_list.grid(row=2, column=2)
         self.records_list.config(width=32, height=15)
 
-        self.download_button = Button(self.search_frame, text="Download", width=10, command=self.choose_item)
+        self.download_button = Button(self.search_frame, text = "Download", width=10, command=self.choose_item)
         self.download_button.grid(row=3, column=2)
 
-        self.disconnect_button = Button(self.search_frame, text="Disconnect", width=12, command=self.send_disconnect)
+        self.disconnect_button = Button(self.search_frame, text = "Disconnect", width = 12, command = self.send_disconnect)
         self.disconnect_button.grid(row=4, column=2)
+
 
     def myreceive(self, client_sock):
         return client_sock.recv(2048).decode()
@@ -132,7 +134,6 @@ class App(Frame):
         self.mysend(self.sendSocket, request)
 
     def search(self):
-
 
         # self.sendSocket = self.initSocket(self.sendSocket)
         # self.sendSocket.connect((self.FTIP, self.FTPORT))
@@ -169,9 +170,7 @@ class App(Frame):
             print(path)
             f_list = os.listdir('.')
             print(f_list)
-            list_of_files = [[os.path.splitext(f)[0], self.IP, str(self.LISTENPORT), os.path.splitext(f)[1],
-                              time.strftime('%d/%m/%Y', time.localtime(os.path.getmtime(f))), str(os.path.getsize(f))]
-                             for f in f_list if os.path.isfile(f)]
+            list_of_files = [[os.path.splitext(f)[0],self.IP, str(self.LISTENPORT), os.path.splitext(f)[1], time.strftime('%d/%m/%Y', time.localtime(os.path.getmtime(f))), str(os.path.getsize(f))] for f in f_list if os.path.isfile(f)]
             print(list_of_files)
             stream = ';'.join(["<" + ','.join(x) + ">" for x in list_of_files])
             self.mysend(self.sendSocket, stream)
@@ -179,7 +178,8 @@ class App(Frame):
         # self.sendSocket.close()
         # print("CLOSED")
 
-    def download(self, client_host, client_port, info):  # depends how Kama will pass info from list
+
+    def download(self, client_host, client_port, info): # depends how Kama will pass info from list
         port = self.generatePORT()
         downloadSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         while 1:
@@ -217,6 +217,7 @@ class App(Frame):
         print(choosen_host)
         print(choosen_port)
 
+    
 
 def main():
     root = Tk()

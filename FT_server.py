@@ -28,7 +28,7 @@ def add_to_table(files_str, host, port):
             data = file_str[1:-1]
             arr = data.split(',')
             name = arr[0]
-            arr = arr[1:]
+            # arr = arr[1:]
             value = ",".join(arr)
             if name in table:
                 table[name].append((host, port, value))
@@ -42,6 +42,14 @@ def add_to_table(files_str, host, port):
         return False
     return True
 
+def delete_from_table(client_sock):
+    host, port = client_sock.getpeername()
+    for name in table:
+        tuples = table[name]
+        for tup in tuples:
+            if (tup[0], tup[1]) == (host, port):
+                table[name].remove(tup)
+
 
 def register_client(client_sock):
     host, port = client_sock.getpeername()
@@ -50,7 +58,6 @@ def register_client(client_sock):
 def unregister(client_sock):
     host, port = client_sock.getpeername()
     clients.remove((host, port))
-    client_sock.close()
 
 
 def handle_client_first_time(client_sock):
@@ -110,6 +117,9 @@ def handle_request(request, client_sock):
     greeting_message = "HI"
     print(request)
     if request == "HELLO":
+        if (client_host, client_port) in clients:
+            mysend(client_sock, "ALREADY REGISTERED")
+            return
         print("it is %s " % request)
         mysend(client_sock, greeting_message)
 
@@ -138,6 +148,7 @@ def handle_request(request, client_sock):
 
     if request == "BYE":
         unregister(client_sock)
+        delete_from_table(client_sock)
 
 
 
