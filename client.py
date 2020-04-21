@@ -204,7 +204,8 @@ class App(Frame):
             f = open(name, 'wb')
             f.write(file)
             f.close()
-        print ("ERROR OCCURED")
+        else:
+            print ("ERROR OCCURED")
         downloadSocket.close()
 
     def choose_item(self):
