@@ -31,7 +31,7 @@ answer = downloadSocket.recv(4096)
 
 if answer[:4].decode() == "FILE":
     file = answer[6:]
-    name = "test.py"
+    name = "test.txt"
     f = open(name, 'wb')
     f.write(file)
     f.close()

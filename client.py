@@ -4,11 +4,6 @@ import socket
 import platform
 import os
 import time
-
-
-SERVER_IP = "127.0.0.1"
-SERVER_PORT = 5555
-client_soc = None
 from random import seed
 from random import randint
 
@@ -58,10 +53,22 @@ class App(Frame):
     def listenClients(self):
         while 1:
             client_sock, client_addr = self.listenSocket.accept()
-            thread.start_new_thread(self.handleRequest, client_sock)
+            thread.start_new_thread(self.handleRequest, (client_sock, ))
 
     def handleRequest(self, client_sock):
-        pass
+        stream = self.myreceive(client_sock)
+        if stream[:8] == "DOWNLOAD":
+            info = stream[10:].split(',')
+            name = info[0]
+            type = info[1]
+            size = info[2]
+            full_name = name+type
+            f = open(full_name, 'rb')
+            text = f.read()
+            protocol = "FILE: "
+            client_sock.sendall(protocol.encode() + text)
+            f.close()
+
 
     def initUI(self):
         self.root.title("P2P File Sharing System")
@@ -144,9 +151,33 @@ class App(Frame):
         # print("CLOSED")
 
 
-    def download(self, client_addr, client_port):
-        self.sendSocket.connect((client_addr, client_port))
-        pass
+    def download(self, client_host, client_port, info): # depends how Kama will pass info from list
+        port = self.generatePORT()
+        downloadSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        while 1:
+            try:
+                addr = (self.IP, port)
+                downloadSocket.bind(addr)
+                print "BINDED"
+                break
+            except:
+                port = self.generatePORT()
+                pass
+
+        downloadSocket.connect((client_host, client_port))
+        mess = "DOWNLOAD: " + info
+        self.mysend(downloadSocket, mess)
+
+        answer = downloadSocket.recv(4096)
+
+        if answer[:4].decode() == "FILE":
+            file = answer[6:]
+            name = info.split(',')[0] + info.split(',')[1]
+            f = open(name, 'wb')
+            f.write(file)
+            f.close()
+        print "ERROR OCCURED"
+
 
 def main():
     root = Tk()
