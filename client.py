@@ -1,4 +1,4 @@
-from tkinter import *
+from Tkinter import *
 import thread
 import socket
 import platform
@@ -105,7 +105,7 @@ class App(Frame):
         self.records_list.grid(row=2, column=2)
         self.records_list.config(width=32, height=15)
 
-        self.download_button = Button(self.search_frame, text="Download", width=10, command=self.choose_item)
+        self.download_button = Button(self.search_frame, text="Download", width=10, command=self.send_choose_item)
         self.download_button.grid(row=3, column=2)
 
         self.disconnect_button = Button(self.search_frame, text="Disconnect", width=12, command=self.send_disconnect)
@@ -125,6 +125,9 @@ class App(Frame):
 
     def send_disconnect(self):
         thread.start_new_thread(self.disconnect, ())
+
+    def send_choose_item(self):
+        thread.start_new_thread(self.choose_item, ())
 
     def disconnect(self):
         request = "BYE"

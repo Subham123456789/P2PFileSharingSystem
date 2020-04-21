@@ -110,6 +110,8 @@ def handle(client_sock, client_addr):
             chunk = myreceive(client_sock)
         except:
             chunk = None
+    unregister(client_sock)
+    delete_from_table(client_sock)
     client_sock.close()
 
 def handle_request(request, client_sock):
