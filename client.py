@@ -1,4 +1,4 @@
-from Tkinter import *
+from tkinter import *
 import thread
 import socket
 import platform
@@ -85,22 +85,29 @@ class App(Frame):
 
         padX = 10
         padY = 10
-        parentFrame = Frame(self.root)
-        parentFrame.grid(padx=padX, pady=padY, sticky=E+W+N+S)
+        self.parentFrame = Frame(self.root)
+        self.parentFrame.grid(padx=padX, pady=padY, sticky=E+W+N+S)
 
-        search_frame = Frame(parentFrame)
-        search_label = Label(search_frame, text="File name: ")
+        self.search_frame = Frame(self.parentFrame)
+        self.search_label = Label(self.search_frame, text="File name: ")
         self.search_var = StringVar()
         self.search_var.set("Enter the file name")
-        search_field = Entry(search_frame, width=20, textvariable=self.search_var)
-        search_button = Button(search_frame, text="Search", width=10, command=self.send_search)
-        connect_button = Button(search_frame, text = "Connect", width=10, command=self.send_connect)
-        self.list_of_clients = Label(parentFrame, text="")
-        search_frame.grid(padx=130, pady=100, sticky=E + W + N + S)
-        connect_button.grid(row=0, column=2)
-        search_label.grid(row=1, column=1)
-        search_field.grid(row=1, column=2)
-        search_button.grid(row=1, column=3)
+        self.search_field = Entry(self.search_frame, width=20, textvariable=self.search_var)
+        self.search_button = Button(self.search_frame, text="Search", width=10, command=self.send_search)
+        self.connect_button = Button(self.search_frame, text = "Connect", width=10, command=self.send_connect)
+        self.list_of_clients = Label(self.parentFrame, text="")
+        self.search_frame.grid(padx=110, pady=100, sticky=E + W + N + S)
+        self.connect_button.grid(row=0, column=2)
+        self.search_label.grid(row=1, column=1)
+        self.search_field.grid(row=1, column=2)
+        self.search_button.grid(row=1, column=3)
+
+        self.records_list = Listbox(self.search_frame)
+        self.records_list.grid(row=2, column=2)
+        self.records_list.config(width=32, height=15)
+
+        self.download_button = Button(self.search_frame, text = "Download", width=10, command=self.choose_item)
+        self.download_button.grid(row=3, column=2)
 
     def myreceive(self, client_sock):
         return client_sock.recv(2048).decode()
@@ -125,7 +132,13 @@ class App(Frame):
         request = "SEARCH: " + name
         self.mysend(self.sendSocket, request)
         message = self.myreceive(self.sendSocket)
+        message = message[7:][1:-1]
+        message = message.split(';')
         print(message)
+
+        for el in message:
+            self.records_list.insert(END, el)
+
         # self.list_of_clients.set(message)
         # self.sendSocket.close()
 
@@ -158,7 +171,7 @@ class App(Frame):
             try:
                 addr = (self.IP, port)
                 downloadSocket.bind(addr)
-                print "BINDED"
+                print ("BINDED")
                 break
             except:
                 port = self.generatePORT()
@@ -176,8 +189,19 @@ class App(Frame):
             f = open(name, 'wb')
             f.write(file)
             f.close()
-        print "ERROR OCCURED"
+        print ("ERROR OCCURED")
 
+    def choose_item(self):
+        choosen_item = self.records_list.get(ACTIVE)
+        print(choosen_item)
+        choosen_arr = choosen_item.split(',')
+        choosen_host = choosen_arr[0]
+        choosen_port = int(choosen_arr[1])
+
+        print(choosen_host)
+        print(choosen_port)
+
+    
 
 def main():
     root = Tk()
