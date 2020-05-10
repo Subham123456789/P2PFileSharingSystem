@@ -3,7 +3,7 @@
 
 ## How to run main redirecting server [FT]:
 ```python
-python3 server.py
+python3 FT_server.py
 ```
 ## How to run a client:
 ```python
